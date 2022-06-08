@@ -58,7 +58,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyBookAdapter>
                 Gson gson = new Gson();
                 String jsonString = gson.toJson(model);
                 intent.putExtra("bookDetail", jsonString);
-
                 context.startActivity(intent);
             }
         });

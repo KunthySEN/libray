@@ -36,10 +36,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     RecyclerView recyclerView;
     List<BookModel> list=new ArrayList<BookModel>();
     BookAdapter adapter;
-    Context c;
     TextView author_name,author_age,author_province;
     String name,age,province;
-
     long author_ID;
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -47,17 +45,41 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book);
         bindViewID();
+        getAuthorInfo();
+        setTextToView();
+        actionCallBack();
+    }
+    public void getAuthorInfo(){
         Intent intent = getIntent();
         author_ID = intent.getLongExtra("id",0);
         name = intent.getStringExtra("author_name");
-        author_name.setText(name);
         age = intent.getStringExtra("author_age");
-        author_age.setText(age);
-        add.setOnClickListener(this);
         province = intent.getStringExtra("author_province");
+    }
+    public void setTextToView(){
+        author_name.setText(name);
+        author_age.setText(age);
         author_province.setText(province);
     }
-    private void  addData(Context c, long id) {
+    public void actionCallBack(){
+        add.setOnClickListener(this);
+
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(list.size()>0) {
+            list.clear();
+        }
+        addBook(this,author_ID);
+    }
+    public void bindViewID(){
+        add = findViewById(R.id.add);
+        author_name = findViewById(R.id.name);
+        author_age = findViewById(R.id.age);
+        author_province = findViewById(R.id.province);
+    }
+    private void  addBook(Context c, long id) {
         RequestQueue queue = Volley.newRequestQueue(c);
         String url = "http://172.16.9.128:8000/api/books/filter/"+id;
 // Request a string response from the provided URL.
@@ -73,7 +95,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                             for (int i=0;i<objectList.length();i++){
                                 JSONObject data = objectList.getJSONObject(i);
                                 BookModel book = new BookModel().fromJson(data);
-//BookModel book = new BookModel(data.getString("title"),data.getString("body"));
                                 list.add(book);
                             }
                             recyclerView= findViewById(R.id.books);
@@ -95,20 +116,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         queue.add(stringRequest);
     }
     @Override
-    public void onResume(){
-        super.onResume();
-        if(list.size()>0) {
-            list.clear();
-        }
-        addData(this,author_ID);
-    }
-    public void bindViewID(){
-        add = findViewById(R.id.add);
-        author_name = findViewById(R.id.name);
-        author_age = findViewById(R.id.age);
-        author_province = findViewById(R.id.province);
-    }
-    @Override
     public void onClick(View view) {
         if (view.getId() == R.id.add) {
             Intent intent = new Intent(getBaseContext(),PostRequestActivity.class);
@@ -116,4 +123,5 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
     }
+
 }

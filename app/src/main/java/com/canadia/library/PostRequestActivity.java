@@ -27,18 +27,28 @@ public class PostRequestActivity extends AppCompatActivity {
     private EditText title, body;
     private Button send;
     long author_ID;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_request);
-        // initializing our views
+        bindViewID();
+        getDataFromIntent();
+        // adding on click listener to our button.
+        action();
+
+    }
+    // initializing our views
+    public void bindViewID(){
         title = findViewById(R.id.title);
         body = findViewById(R.id.body);
         send = findViewById(R.id.btn_send);
+    }
+    // data get from intent
+    public void getDataFromIntent(){
         Intent intent = getIntent();
         author_ID = intent.getLongExtra("author_id",0);
-        // adding on click listener to our button.
+    }
+    public void action(){
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,26 +62,22 @@ public class PostRequestActivity extends AppCompatActivity {
             }
         });
     }
-    private void postDataUsingVolley(String mTitle, String mBody, String author_ID) {
+    private void postDataUsingVolley(String title, String body, String author_ID) {
         // url to post our data
         String url = "http://172.16.9.128:8000/api/books";
         RequestQueue queue = Volley.newRequestQueue(PostRequestActivity.this);
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, url, new com.android.volley.Response.Listener<String>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject respObj = new JSONObject(response);
-                    String message = respObj.getString("Message");
-                    Toast.makeText(PostRequestActivity.this,message , Toast.LENGTH_SHORT).show();
-                    finish();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(PostRequestActivity.this,e.getMessage() , Toast.LENGTH_SHORT).show();
-                }
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            try {
+                JSONObject respObj = new JSONObject(response);
+                String message = respObj.getString("Message");
+                Toast.makeText(PostRequestActivity.this,message , Toast.LENGTH_SHORT).show();
+                finish();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(PostRequestActivity.this,e.getMessage() , Toast.LENGTH_SHORT).show();
             }
         }, new com.android.volley.Response.ErrorListener() {
             @Override
@@ -83,8 +89,8 @@ public class PostRequestActivity extends AppCompatActivity {
 
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("title", mTitle);
-                params.put("body", mBody);
+                params.put("title", title);
+                params.put("body", body);
                 params.put("author_id", author_ID);
                 return params;
             }

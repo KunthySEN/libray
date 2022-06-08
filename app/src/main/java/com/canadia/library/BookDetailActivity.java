@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,19 +36,19 @@ import java.util.Map;
 public class BookDetailActivity extends AppCompatActivity implements View.OnClickListener {
     TextView t_title,t_desc;
    ImageView edit,delete;
-    String book_detail_s;
+    String book_detail_s, base_url = "http://172.16.9.128:8000/api/books/";
     JSONObject book_detail_j;
     BookModel book_Detail;
     Context activityContext;
     Tool tool;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
         bindViewID();
         // get data string from intent
-        Intent intent = getIntent();
-        book_detail_s = intent.getStringExtra("bookDetail");
+        getDataFromIntent();
         activityContext = this;
         tool =new Tool();
         try {
@@ -58,11 +59,8 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        t_title.setText(book_Detail.getTitle());
-        t_desc.setText(book_Detail.getBody());
-        edit.setOnClickListener(this);
-        delete.setOnClickListener(this);
-
+        setTextToView();
+        callBackAction();
     }
     public void bindViewID(){
         t_title = findViewById(R.id.book_title);
@@ -70,7 +68,18 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
         edit = findViewById(R.id.edit);
         delete = findViewById(R.id.delete);
     }
-
+    public void getDataFromIntent(){
+    Intent intent = getIntent();
+    book_detail_s = intent.getStringExtra("bookDetail");
+    }
+    public void setTextToView(){
+        t_title.setText(book_Detail.getTitle());
+        t_desc.setText(book_Detail.getBody());
+    }
+    public void  callBackAction(){
+        edit.setOnClickListener(this);
+        delete.setOnClickListener(this);
+    }
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.edit) {
@@ -93,31 +102,22 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
     }
     private void updateBookRequest(Context context, BookModel book_Detail_p) {
         // url to post our data
-        String url = "http://172.16.9.128:8000/api/books/"+book_Detail_p.getId();
+        String url = base_url+book_Detail_p.getId();
         RequestQueue queue = Volley.newRequestQueue(context);
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.PUT, url, new com.android.volley.Response.Listener<String>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject respObj = new JSONObject(response);
-                    String message = respObj.getString("message");
-                    Toast.makeText(context,message , Toast.LENGTH_SHORT).show();
-                    finish();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(context,e.getMessage() , Toast.LENGTH_SHORT).show();
-                }
+        StringRequest request = new StringRequest(Request.Method.PUT, url, response -> {
+            try {
+                JSONObject respObj = new JSONObject(response);
+                String message = respObj.getString("message");
+                Toast.makeText(context,message , Toast.LENGTH_SHORT).show();
+                finish();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(context,e.getMessage() , Toast.LENGTH_SHORT).show();
             }
-        }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "Fail to get response = " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
+        }, error -> Toast.makeText(context, "Fail to get response = " + error.getMessage(), Toast.LENGTH_SHORT).show()) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
@@ -136,28 +136,19 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
         queue.add(request);
     }
     private void deleteBookRequest(Context context, long id) throws IOException {
-        String url = "http://172.16.9.128:8000/api/books/" + id;
+        String url = base_url + id;
         RequestQueue queue = Volley.newRequestQueue(context);
-        StringRequest request = new StringRequest(Request.Method.DELETE, url, new com.android.volley.Response.Listener<String>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject respObj = new JSONObject(response);
-                    String message = respObj.getString("message");
-                    Toast.makeText(context,message , Toast.LENGTH_SHORT).show();
-                    finish();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(context,e.getMessage() , Toast.LENGTH_SHORT).show();
-                }
+        StringRequest request = new StringRequest(Request.Method.DELETE, url, response -> {
+            try {
+                JSONObject respObj = new JSONObject(response);
+                String message = respObj.getString("message");
+                Toast.makeText(context,message , Toast.LENGTH_SHORT).show();
+                finish();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(context,e.getMessage() , Toast.LENGTH_SHORT).show();
             }
-        }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "Fail to get response = " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        }, error -> Toast.makeText(context, "Fail to get response = " + error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(request);
     }
 }
