@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     Adapter adapter;
     Context context;
 
-    AppRepository respository;
+    AppRepository repository;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 //        getAuthors(this);
         context = this;
-        respository = new AppRepository(context);
+        repository = new AppRepository(context);
 
         getAuthors();
 
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getAuthors() {
 
-        respository.get("authors", new IApiResponse() {
+        repository.get("authors", new IApiResponse() {
             @Override
             public void OnResponse(JSONObject response){
                 Log.e("tMain", "Response: " + response);
@@ -77,33 +77,4 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-//    private void  getAuthors(Context context) {
-//        RequestQueue queue = Volley.newRequestQueue(context);
-//        String url = "http://172.16.9.128:8000/api/authors";
-//
-//// Request a string response from the provided URL.
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-//                response -> {
-//                    try {
-//                        JSONObject json = new JSONObject(response);
-//                        JSONArray objectList = json.getJSONArray("data");
-//                        for (int i=0;i<objectList.length();i++){
-//                            JSONObject data = objectList.getJSONObject(i);
-//
-//                            AuthorModel aut = new AuthorModel(data.getLong("id"),data.getString("name"),data.getInt("age"),data.getString("province"));
-//                            list.add(aut);
-//                        }
-//                        recyclerView= findViewById(R.id.authors);
-//                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-//                        adapter = new Adapter(context,list,list.size());
-//                        recyclerView.setAdapter(adapter);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }, error -> {
-//                    //textView.setText("That didn't work!"+error.getMessage());
-//                });
-//// Add the request to the RequestQueue.
-//        queue.add(stringRequest);
-//    }
 }

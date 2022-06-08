@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.canadia.library.api.interfaces.IApiResponse;
+import com.canadia.library.api.repositories.AppRepository;
+import com.canadia.library.models.BookModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +31,7 @@ public class PostRequestActivity extends AppCompatActivity {
     private EditText title, body;
     private Button send;
     long author_ID;
+    AppRepository repository;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +40,7 @@ public class PostRequestActivity extends AppCompatActivity {
         getDataFromIntent();
         // adding on click listener to our button.
         action();
+        repository = new AppRepository(getBaseContext());
 
     }
     // initializing our views
@@ -58,49 +64,72 @@ public class PostRequestActivity extends AppCompatActivity {
                     return;
                 }
                 // calling a method to post the data and passing our title ,body and author_id.
-                postDataUsingVolley(title.getText().toString(), body.getText().toString(),String.valueOf(author_ID));
+//                postDataUsingVolley(title.getText().toString(), body.getText().toString(),String.valueOf(author_ID));
+                createBook();
             }
         });
     }
-    private void postDataUsingVolley(String title, String body, String author_ID) {
-        // url to post our data
-        String url = "http://172.16.9.128:8000/api/books";
-        RequestQueue queue = Volley.newRequestQueue(PostRequestActivity.this);
-        // on below line we are calling a string
-        // request method to post the data to our API
-        // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
-            try {
-                JSONObject respObj = new JSONObject(response);
-                String message = respObj.getString("Message");
-                Toast.makeText(PostRequestActivity.this,message , Toast.LENGTH_SHORT).show();
-                finish();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Toast.makeText(PostRequestActivity.this,e.getMessage() , Toast.LENGTH_SHORT).show();
-            }
-        }, new com.android.volley.Response.ErrorListener() {
+    private void createBook(){
+       BookModel bookData =new BookModel(title.getText().toString(), body.getText().toString(), 0, author_ID );
+        repository.post("books", new IApiResponse() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(PostRequestActivity.this, "Fail to get response = " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
+            public void OnResponse(JSONObject response){
+                Log.e("tMain", "Response: " + response);
+                try {
+                    String message = response.getString("Message");
+                    Toast.makeText(PostRequestActivity.this,message , Toast.LENGTH_SHORT).show();
+                    finish();
 
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("title", title);
-                params.put("body", body);
-                params.put("author_id", author_ID);
-                return params;
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(PostRequestActivity.this,e.getMessage() , Toast.LENGTH_SHORT).show();
+                }
             }
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("Content-Type","application/x-www-form-urlencoded");
-                return params;
+            public void OnError(VolleyError error) {
+                Log.e("tMain", "Error: " + error);
             }
-        };
-        queue.add(request);
+        }, bookData);
     }
+//    private void postDataUsingVolley(String title, String body, String author_ID) {
+//        // url to post our data
+//        String url = "http://172.16.9.128:8000/api/books";
+//        RequestQueue queue = Volley.newRequestQueue(PostRequestActivity.this);
+//        // on below line we are calling a string
+//        // request method to post the data to our API
+//        // in this we are calling a post method.
+//        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+//            try {
+//                JSONObject respObj = new JSONObject(response);
+//                String message = respObj.getString("Message");
+//                Toast.makeText(PostRequestActivity.this,message , Toast.LENGTH_SHORT).show();
+//                finish();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//                Toast.makeText(PostRequestActivity.this,e.getMessage() , Toast.LENGTH_SHORT).show();
+//            }
+//        }, new com.android.volley.Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Toast.makeText(PostRequestActivity.this, "Fail to get response = " + error.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        }) {
+//            @Override
+//
+//            protected Map<String, String> getParams() {
+//                Map<String, String> params = new HashMap<String, String>();
+//                params.put("title", title);
+//                params.put("body", body);
+//                params.put("author_id", author_ID);
+//                return params;
+//            }
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String,String> params = new HashMap<String, String>();
+//                params.put("Content-Type","application/x-www-form-urlencoded");
+//                return params;
+//            }
+//        };
+//        queue.add(request);
+//    }
 }
