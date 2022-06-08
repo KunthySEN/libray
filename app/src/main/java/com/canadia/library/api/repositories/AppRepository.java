@@ -1,18 +1,15 @@
 package com.canadia.library.api.repositories;
 
 import android.content.Context;
-import android.util.Pair;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.canadia.library.api.interfaces.IApiResponse;
 import com.canadia.library.api.services.APIService;
 import com.canadia.library.models.APIResponseModel;
 
 import org.json.JSONObject;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 public class AppRepository {
 
@@ -25,18 +22,22 @@ public class AppRepository {
         this.context = context;
     }
 
-    RequestQueue queue = APIService.getInstance(this.context.getApplicationContext()).
-            getRequestQueue();
 
-    public APIResponseModel get(String endpoint) {
+    public void get(String endpoint, IApiResponse result) {
+        APIService.getInstance(this.context.getApplicationContext()).
+                getRequestQueue();
         String url = BaseURL + endpoint;
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, response ->{
-            apiResponse = APIResponseModel.clone(response,null);
-        }, error -> {
-            apiResponse = APIResponseModel.clone(null,error);
-        });
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, result::OnResponse, result::OnError);
         APIService.getInstance(context).addToRequestQueue(jsonRequest);
-        return apiResponse;
+
     }
+
+//    public void post(String endpoint, IApiResponse postResult, JsonRequest jsonRequest){
+//        APIService.getInstance(this.context.getApplicationContext()).
+//                getRequestQueue();
+//        String url = BaseURL + endpoint;
+//        JSONObject jsonObject = new JSONObject(Request.Method.POST,url,postResult.OnResponse());
+//
+//    }
 
 }
