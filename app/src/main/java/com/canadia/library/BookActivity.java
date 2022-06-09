@@ -23,7 +23,9 @@ import com.android.volley.toolbox.Volley;
 import com.canadia.library.adapters.BookAdapter;
 import com.canadia.library.api.interfaces.IApiResponse;
 import com.canadia.library.api.repositories.AppRepository;
+import com.canadia.library.helper.OnButtonClick;
 import com.canadia.library.models.BookModel;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -99,7 +101,12 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     booksView= findViewById(R.id.books);
                     booksView.setLayoutManager(new LinearLayoutManager(context));
-                    adapter = new BookAdapter(context,books,books.size());
+                    adapter = new BookAdapter(context, books, books.size(), new OnButtonClick() {
+                        @Override
+                        public void buttonClick(BookModel data) {
+                            toBookDetail(data);
+                        }
+                    });
                     booksView.setAdapter(adapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -156,5 +163,11 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
     }
-
+    private void toBookDetail(BookModel bookModel){
+        Intent intent = new Intent(context, BookDetailActivity.class);
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(bookModel);
+        intent.putExtra("bookDetail", jsonString);
+        context.startActivity(intent);
+    }
 }

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.canadia.library.adapters.Adapter;
 import com.canadia.library.api.interfaces.IApiResponse;
 import com.canadia.library.api.repositories.AppRepository;
+import com.canadia.library.helper.OnAuthorButtonClick;
 import com.canadia.library.models.AuthorModel;
 
 import org.json.JSONArray;
@@ -63,7 +65,13 @@ public class MainActivity extends AppCompatActivity {
                     authors = responseAuthors;
                     authorsView= findViewById(R.id.authors);
                     authorsView.setLayoutManager(new LinearLayoutManager(context));
-                    adapter = new Adapter(context,authors,authors.size());
+                    adapter = new Adapter(context, authors, authors.size(), new OnAuthorButtonClick() {
+                        @Override
+                        public void onAuthorButtonClick(AuthorModel data) {
+                            toAuthorDetail(data);
+                        }
+                    });
+
                     authorsView.setAdapter(adapter);
 
                 }catch (JSONException e) {
@@ -75,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("tMain", "Error: " + error);
             }
         });
-
+    }
+    private void toAuthorDetail(AuthorModel authorModel){
+        Intent intent = new Intent(context, BookActivity.class);
+        intent.putExtra("author_name",authorModel.getName());
+        intent.putExtra("author_age",String.valueOf(authorModel.getAge()));
+        intent.putExtra("author_province",authorModel.getProvince());
+        intent.putExtra("id",authorModel.getID());
+        context.startActivity(intent);
     }
 }

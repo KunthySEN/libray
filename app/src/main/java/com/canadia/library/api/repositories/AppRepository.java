@@ -22,12 +22,11 @@ public class AppRepository {
 
     private static final String BaseURL = "http://172.16.9.128:8000/api/";
 
-    private Context context;
+    private final Context context;
 
     public AppRepository(Context context) {
         this.context = context;
     }
-
 
     public void get(String endpoint, IApiResponse result) {
         APIService.getInstance(this.context.getApplicationContext()).
@@ -48,7 +47,7 @@ public class AppRepository {
         try {
             inputJson = new JSONObject(jsonString);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
+            /* TODO Auto-generated catch block */
             e.printStackTrace();
         }
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, url, inputJson,
@@ -68,7 +67,7 @@ public class AppRepository {
         try {
             inputJson = new JSONObject(jsonString);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
+            /* TODO Auto-generated catch block */
             e.printStackTrace();
         }
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.PUT, url, inputJson,
@@ -84,7 +83,5 @@ public class AppRepository {
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, result::OnResponse, result::OnError);
         APIService.getInstance(context).addToRequestQueue(jsonRequest);
     }
-
-
 
 }

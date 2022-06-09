@@ -91,7 +91,7 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
                 tool.dialogForm(BookDetailActivity.this, book_Detail, new OnButtonClick() {
                     @Override
                     public void buttonClick(BookModel data) {
-//                    updateBookRequest(activityContext, book_Detail);
+                   //updateBookRequest(activityContext, book_Detail);
                         updateBook();
                         tool.dialog.dismiss();
                         finish();
@@ -99,7 +99,7 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
                 });
                 break;
             case R.id.delete:
-                //                deleteBookRequest(activityContext,book_Detail.getId());
+                //deleteBookRequest(activityContext,book_Detail.getId());
                 deleteBook(book_Detail.getId());
                 finish();
                 break;
@@ -157,6 +157,7 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
 //    }
     private void deleteBook(long id){
         repository.delete("books", id, new IApiResponse() {
+
             @Override
             public void OnResponse(JSONObject response) {
 

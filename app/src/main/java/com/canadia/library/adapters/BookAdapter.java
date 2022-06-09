@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.canadia.library.BookActivity;
 import com.canadia.library.BookDetailActivity;
 import com.canadia.library.R;
+import com.canadia.library.helper.OnButtonClick;
 import com.canadia.library.models.BookModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,11 +31,12 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyBookAdapter>
     Context context;
     List<BookModel> list;
     int size;
-
-    public BookAdapter(Context context, List<BookModel> list, int size) {
+    OnButtonClick onButtonClick;
+    public BookAdapter(Context context, List<BookModel> list, int size, OnButtonClick onButtonClick) {
         this.context = context;
         this.list = list;
         this.size = size;
+        this.onButtonClick= onButtonClick;
     }
 
     @NonNull
@@ -54,11 +56,9 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyBookAdapter>
             public void onClick(View v) {
                 // To transfer data object to another activity
                 // convert object model to json string
-                Intent intent = new Intent(context, BookDetailActivity.class);
-                Gson gson = new Gson();
-                String jsonString = gson.toJson(model);
-                intent.putExtra("bookDetail", jsonString);
-                context.startActivity(intent);
+
+                BookModel bookModel = new BookModel(model.getTitle(), model.getBody(),model.getId(),model.getAuthor_id());
+                onButtonClick.buttonClick(bookModel);
             }
         });
     }

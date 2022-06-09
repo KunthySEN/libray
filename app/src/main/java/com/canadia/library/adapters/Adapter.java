@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.canadia.library.BookActivity;
 import com.canadia.library.R;
+import com.canadia.library.helper.OnAuthorButtonClick;
+import com.canadia.library.helper.OnButtonClick;
 import com.canadia.library.models.AuthorModel;
 
 import java.util.List;
@@ -23,11 +26,13 @@ public class Adapter  extends RecyclerView.Adapter<Adapter.MyAdapter> {
     Context context;
     List<AuthorModel> list;
     int size;
+    OnAuthorButtonClick onAuthorButtonClick;
 
-    public Adapter(Context context, List<AuthorModel> list, int size) {
+    public Adapter(Context context, List<AuthorModel> list, int size, OnAuthorButtonClick onAuthorButtonClick) {
         this.context = context;
         this.list = list;
         this.size = size;
+        this.onAuthorButtonClick = onAuthorButtonClick;
     }
 
     @NonNull
@@ -48,15 +53,12 @@ public class Adapter  extends RecyclerView.Adapter<Adapter.MyAdapter> {
         holder.my_author.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, BookActivity.class);
-                intent.putExtra("author_name",model.getName());
-                intent.putExtra("author_age",String.valueOf(model.getAge()));
-                intent.putExtra("author_province",model.getProvince());
-                intent.putExtra("id",model.getID());
-                context.startActivity(intent);
+                AuthorModel authorModel = new AuthorModel(model.getID(),model.getName(),model.getAge(),model.getProvince());
+                onAuthorButtonClick.onAuthorButtonClick(authorModel);
             }
         });
     }
+
     @Override
     public int getItemCount() {return size;}
     public static class MyAdapter extends RecyclerView.ViewHolder {
