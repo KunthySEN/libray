@@ -6,10 +6,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,7 +25,9 @@ import com.android.volley.toolbox.Volley;
 import com.canadia.library.adapters.BookAdapter;
 import com.canadia.library.api.interfaces.IApiResponse;
 import com.canadia.library.api.repositories.AppRepository;
+import com.canadia.library.helper.Dialog;
 import com.canadia.library.helper.OnButtonClick;
+import com.canadia.library.helper.Tool;
 import com.canadia.library.models.BookModel;
 import com.google.gson.Gson;
 
@@ -45,6 +49,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     long author_ID;
     AppRepository repository;
     Context context;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,9 +163,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.add) {
-            Intent intent = new Intent(getBaseContext(),PostRequestActivity.class);
-            intent.putExtra("author_id",author_ID);
-            startActivity(intent);
+                    Intent intent = new Intent(getBaseContext(),PostRequestActivity.class);
+                    intent.putExtra("author_id",author_ID);
+                    startActivity(intent);
         }
     }
     private void toBookDetail(BookModel bookModel){

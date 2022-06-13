@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.canadia.library.api.interfaces.IApiResponse;
 import com.canadia.library.api.repositories.AppRepository;
+import com.canadia.library.helper.Dialog;
 import com.canadia.library.helper.OnButtonClick;
 import com.canadia.library.helper.Tool;
 import com.canadia.library.models.BookModel;
@@ -44,7 +46,7 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
     Context activityContext;
     Tool tool;
     AppRepository repository;
-
+    Dialog loadingdialog  = new Dialog(BookDetailActivity.this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,16 +94,35 @@ public class BookDetailActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void buttonClick(BookModel data) {
                    //updateBookRequest(activityContext, book_Detail);
-                        updateBook();
-                        tool.dialog.dismiss();
-                        finish();
+                        loadingdialog.startLoadingdialog();
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                // after 3 seconds
+                                updateBook();
+                                tool.dialog.dismiss();
+                                finish();
+                            }
+                        }, 3000); // 3 seconds
+
                     }
                 });
                 break;
             case R.id.delete:
                 //deleteBookRequest(activityContext,book_Detail.getId());
-                deleteBook(book_Detail.getId());
-                finish();
+                loadingdialog.startLoadingdialog();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // after 3 seconds
+                        loadingdialog.dismissdialog();
+                        deleteBook(book_Detail.getId());
+                        finish();
+                    }
+                }, 3000); // 3 seconds
+             ;
                 break;
         }
     }

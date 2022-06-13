@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.canadia.library.api.interfaces.IApiResponse;
 import com.canadia.library.api.repositories.AppRepository;
+import com.canadia.library.helper.Dialog;
 import com.canadia.library.models.BookModel;
 
 import org.json.JSONException;
@@ -32,6 +34,8 @@ public class PostRequestActivity extends AppCompatActivity {
     private Button send;
     long author_ID;
     AppRepository repository;
+    Dialog loadingdialog  = new Dialog(PostRequestActivity.this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,14 +62,20 @@ public class PostRequestActivity extends AppCompatActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // validating if the text field is empty or not.
-                if (title.getText().toString().isEmpty() && body.getText().toString().isEmpty()) {
-                    Toast.makeText(PostRequestActivity.this, "Please enter both the values", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                // calling a method to post the data and passing our title ,body and author_id.
-//                postDataUsingVolley(title.getText().toString(), body.getText().toString(),String.valueOf(author_ID));
-                createBook();
+                loadingdialog.startLoadingdialog();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // after 3 seconds
+                        loadingdialog.dismissdialog();
+                        if (title.getText().toString().isEmpty() && body.getText().toString().isEmpty()) {
+                            Toast.makeText(PostRequestActivity.this, "Please enter both the values", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        createBook();
+                    }
+                }, 3000); // 3 seconds
             }
         });
     }

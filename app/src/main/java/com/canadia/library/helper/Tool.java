@@ -1,10 +1,13 @@
 package com.canadia.library.helper;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -16,7 +19,9 @@ import com.canadia.library.R;
 import com.canadia.library.models.BookModel;
 
 public class Tool {
+
     public Dialog dialog;
+
     public void dialogForm(Activity activity, BookModel book_detail, final OnButtonClick onButtonClick) {
        dialog = new Dialog(activity);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -49,5 +54,8 @@ public class Tool {
         dialog.show();
 
     }
+
+
+
 }
 
